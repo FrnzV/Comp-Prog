@@ -1,0 +1,90 @@
+from abc import ABC, abstractmethod
+
+class BankAccount(ABC):
+    def __init__(self, account_number, balance=0):
+        self._account_number = account_number
+        self._balance = balance
+
+        @property
+        def account_number(self):
+            return self._account_number
+        
+        @property 
+        def balance(self):
+            return self._balance
+        
+        @abstractmethod
+        def deposit(self, amount):
+            pass
+
+        @abstractmethod
+        def withdraw(self, amount):
+            pass
+
+        @abstractmethod
+        def display_account_type(self):
+            pass
+
+class CurrentAccount(BankAccount):
+    overdraft_limit = -5000
+    
+    def __init__(self, account_number, balance=0):
+        super().__init__(account_number, balance)
+
+    def deposit(self, amount):
+        self._balance += amount 
+
+    def withdraw(self, amount):
+        if self._balance - amount >= CurrentAccount.overdraft_limit:
+            self._balance -= amount
+        else:
+            print("Withdrawl Denied. Overdraft Limit Exceeded.") 
+
+    def display_account_type(self):
+        return "CurrentAccount"
+    
+class SavingsAccount(BankAccount):
+    def __init__(self, account_number, balance=0):
+        super().__init__(account_number, balance)
+
+    def deposit(self, amount):
+        self._balance += amount
+
+    def withdraw(self, amount):
+        if self._balance >= amount:
+           self._balance -= amount
+        else:
+            print("Withdrawl Denied. Insufficient Funds.")
+
+    def display_account_type(self):
+        return "SavingsAccount"
+
+def print_account_details(account):
+    print(f"Account Number: {account.account_number}")
+    print(f"Balance: {account.balance}")
+    print(f"Type: {account.display_account_type()}")
+    print("-" * 40)
+
+if __name__ == "__main__":
+    savings_one = SavingsAccount("GJ759", 9000)
+    savings_two = SavingsAccount("AB409", 2000)
+
+    current_one = CurrentAccount("PL891", -1000)
+    current_two = CurrentAccount("IQ334", 400)
+
+    savings_one.deposit(1000)
+    savings_one.withdraw(5000)
+
+    savings_two.deposit(500)
+    savings_two.withdraw(3000)
+
+    current_one.withdraw(6000)
+    current_two.deposit(1000)
+
+    print_account_details(savings_one)
+
+    print_account_details(savings_two)
+
+    print_account_details(current_one)
+    
+    print_account_details(current_two)
